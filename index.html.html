@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<title>Mutlak Değer Çamaşır Makinesi</title>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{margin:0;font-family:"Comic Sans MS","Segoe UI",system-ui,sans-serif;background:repeating-linear-gradient(45deg,#eaf6ff 0 18px,#e2f0ff 18px 36px);color:#173;overflow:hidden;display:flex;flex-direction:column}
+header{text-align:center;padding:clamp(4px,1vh,10px) 10px 0}
+h1{margin:0;font-size:clamp(15px,2.6vh,26px);color:#2456a8;text-shadow:2px 2px 0 #fff}
+.sub{margin:2px auto 0;max-width:900px;color:#3c5a7a;font-size:clamp(10px,1.7vh,14px);font-weight:700}
+.app{flex:1;display:grid;grid-template-columns:minmax(260px,1fr) minmax(260px,1.15fr) minmax(220px,.9fr);gap:clamp(8px,1.2vw,18px);align-items:center;max-width:1300px;width:100%;margin:auto;padding:clamp(4px,1vh,12px);min-height:0}
+@media (min-width:641px) and (max-width:1024px){
+  .app{grid-template-columns:minmax(240px,1fr) minmax(260px,1.1fr);grid-template-rows:minmax(0,1fr) auto;align-items:stretch;max-width:900px}
+  .left{grid-column:1;grid-row:1}
+  .machineWrap{grid-column:2;grid-row:1;justify-content:center}
+  .right{grid-column:1 / -1;grid-row:2}
+  .right .out{flex-direction:row;justify-content:center;gap:16px}
+}
+@media (max-width:640px){
+  body{overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch}
+  header{padding:8px 8px 2px}
+  h1{font-size:17px}
+  .sub{display:none}
+  .app{display:flex;flex-direction:column;gap:8px;padding:6px 10px 16px;max-width:480px}
+  .panel{padding:8px}
+  .panel h2{font-size:14px;margin-bottom:6px}
+  .numbers{max-height:none;gap:6px}
+  .chip{width:44px;height:44px;font-size:16px;border-width:2px;box-shadow:0 3px 0 #2456a8}
+  .chip.pos{box-shadow:0 3px 0 #18a558}
+  .addBtn{margin-top:6px;padding:9px;font-size:13px;border-width:2px;box-shadow:0 3px 0 #0b6b38}
+  .manual{margin-top:6px;padding:7px;border-width:2px}
+  .manual h3{font-size:12px;margin-bottom:5px}
+  .selector{gap:6px}
+  .arrow{width:46px;height:46px;font-size:18px;border-width:2px;box-shadow:0 3px 0 #2456a8}
+  .valueBox{width:84px;height:46px;border-width:2px}
+  .valueBox input{font-size:20px}
+  .washBtn{margin-top:6px;padding:9px;font-size:14px;border-width:2px;box-shadow:0 3px 0 #2456a8}
+  .machineWrap{gap:5px}
+  .machineNotes{gap:5px;font-size:10px}
+  .noteNeg,.notePos{border-width:2px;padding:2px 6px}
+  .machine{max-width:250px}
+  .bodyTop{height:12px;border-width:3px}
+  .bodyMain{padding:7px;border-width:3px}
+  .brand{font-size:8px;padding:2px 4px;border-width:2px}
+  .knob{width:24px;height:24px;border-width:3px}
+  .doorArea{padding:4px;border-width:3px}
+  .door{width:min(100%,220px);border-width:8px;box-shadow:inset 0 0 0 4px #fff}
+  .inside{font-size:26px}
+  .machineLabel{margin-top:5px;font-size:11px;min-height:26px;border-width:2px}
+  .feet div{width:18px;height:9px}
+  .right .out{gap:6px}
+  .result{width:70px;height:70px;font-size:28px;border-width:4px;box-shadow:0 4px 0 #18a558}
+  .rule{font-size:12px;padding:4px;border-width:2px}
+  .explain{font-size:11px;padding:5px;border-width:2px}
+}
+.panel{background:#fff;border:3px solid #2456a8;border-radius:18px;padding:clamp(6px,1vh,12px);box-shadow:5px 5px 0 rgba(36,86,168,.16);min-height:0}
+.panel h2{margin:0 0 6px;text-align:center;font-size:clamp(12px,1.9vh,17px);color:#2456a8}
+.numbers{display:flex;flex-wrap:wrap;gap:clamp(4px,.7vw,8px);justify-content:center;max-height:22vh;overflow:auto}
+.chip{width:clamp(38px,7.5vw,58px);height:clamp(38px,7.5vw,58px);border-radius:14px;border:3px solid #2456a8;background:#eaf3ff;display:flex;align-items:center;justify-content:center;font-size:clamp(14px,2.4vw,20px);font-weight:900;cursor:grab;touch-action:none;user-select:none;box-shadow:0 4px 0 #2456a8}
+.chip.pos{border-color:#18a558;background:#e9fbf0;box-shadow:0 4px 0 #18a558}
+.chip.drag{position:fixed;z-index:1000;transform:scale(1.2) rotate(-4deg);cursor:grabbing;pointer-events:none}
+.addBtn{display:block;width:100%;margin:8px 0 0;border:3px solid #0b6b38;border-radius:14px;padding:clamp(6px,1.2vh,10px);font-family:inherit;font-weight:900;font-size:clamp(11px,1.8vh,15px);background:#7ee2a8;color:#08421f;cursor:pointer;box-shadow:0 4px 0 #0b6b38}
+.manual{margin-top:8px;background:#fff8dc;border:3px dashed #d9a300;border-radius:14px;padding:clamp(5px,1vh,9px)}
+.manual h3{margin:0 0 5px;text-align:center;font-size:clamp(10px,1.7vh,14px);color:#8a6100}
+.selector{display:flex;align-items:center;justify-content:center;gap:clamp(4px,.8vw,8px)}
+.arrow{width:clamp(38px,6vw,52px);height:clamp(38px,6vw,52px);border:3px solid #2456a8;border-radius:50%;background:#ffe066;color:#2456a8;font-size:clamp(16px,2.6vw,22px);font-weight:900;cursor:pointer;box-shadow:0 4px 0 #2456a8;touch-action:manipulation}
+.valueBox{width:clamp(76px,14vw,104px);height:clamp(44px,7vw,58px);border:3px solid #2456a8;border-radius:12px;display:flex;align-items:center;justify-content:center;background:#fff}
+.valueBox input{width:100%;height:100%;border:0;background:transparent;text-align:center;font-family:inherit;font-size:clamp(18px,3.4vw,26px);font-weight:900;color:#173;outline:none}
+.washBtn{display:block;width:100%;margin-top:7px;border:3px solid #2456a8;border-radius:14px;padding:clamp(7px,1.3vh,11px);font-family:inherit;font-weight:900;font-size:clamp(11px,1.9vh,16px);background:#8ec9ff;color:#123;cursor:pointer;box-shadow:0 4px 0 #2456a8}
+.machineWrap{display:flex;flex-direction:column;align-items:center;gap:clamp(3px,.8vh,7px);min-height:0}
+.machineNotes{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;font-weight:900;font-size:clamp(9px,1.6vh,13px)}
+.noteNeg{background:#ffe3e3;border:3px solid #b3261e;color:#8f1d16;border-radius:12px;padding:3px 8px}
+.notePos{background:#e2f8ea;border:3px solid #0b6b38;color:#08421f;border-radius:12px;padding:3px 8px}
+.machine{width:100%;max-width:min(32vw,360px);position:relative;filter:drop-shadow(6px 7px 0 rgba(36,86,168,.16))}
+.bodyTop{height:clamp(12px,2.2vh,20px);background:#ffd23f;border:4px solid #2456a8;border-bottom:0;border-radius:16px 16px 0 0}
+.bodyMain{position:relative;background:#8ec9ff;border:4px solid #2456a8;border-top:0;border-radius:0 0 20px 20px;padding:clamp(6px,1.2vh,12px)}
+.dialRow{display:flex;justify-content:space-between;align-items:center;margin-bottom:clamp(3px,.8vh,8px)}
+.brand{font-weight:900;color:#123;border:2px solid #123;border-radius:10px;padding:2px 6px;background:#fff;transform:rotate(-2deg);font-size:clamp(8px,1.5vh,12px)}
+.knob{width:clamp(26px,4.5vw,42px);height:clamp(26px,4.5vw,42px);border-radius:50%;background:#fff;border:4px solid #123;position:relative}
+.knob::after{content:"";position:absolute;left:50%;top:4px;width:5px;height:35%;background:#e63946;border-radius:3px;transform:translateX(-50%)}
+.doorArea{display:flex;justify-content:center;padding:clamp(3px,.7vw,6px);background:#5aa9e6;border:4px solid #2456a8;border-radius:16px}
+.door{position:relative;width:min(100%,32vh);aspect-ratio:1/1;border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff,#a9d3ff 60%,#6ea8dc);border:clamp(7px,1.4vw,11px) solid #2456a8;display:flex;align-items:center;justify-content:center;overflow:hidden;box-shadow:inset 0 0 0 6px #fff,inset 0 0 22px rgba(0,40,90,.25)}
+.door::before{content:"";position:absolute;top:12%;left:16%;width:26%;height:16%;background:rgba(255,255,255,.85);border-radius:50%;transform:rotate(-25deg)}
+.drum{position:absolute;inset:10%;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.65) 0 8deg,rgba(255,255,255,0) 8deg 24deg);animation:spin 1.8s linear infinite;opacity:.9}
+@keyframes spin{to{transform:rotate(360deg)}}
+.water{position:absolute;left:0;right:0;bottom:0;height:0;background:rgba(64,156,255,.55);transition:height .35s}
+.washing .water{height:62%}
+.bubble{position:absolute;border-radius:50%;background:rgba(255,255,255,.85);border:2px solid rgba(36,86,168,.35);opacity:0}
+.washing .bubble{animation:rise 1.4s ease-in infinite}
+@keyframes rise{0%{opacity:0;transform:translateY(30px) scale(.5)}30%{opacity:1}100%{opacity:0;transform:translateY(-70px) scale(1.1)}}
+.inside{position:relative;z-index:4;font-size:clamp(20px,5vw,40px);font-weight:900;color:#123;text-shadow:2px 2px 0 #fff}
+.shake{animation:shake .55s}
+@keyframes shake{0%,100%{transform:translateX(0)}15%{transform:translateX(-8px) rotate(-2deg)}30%{transform:translateX(8px) rotate(2deg)}45%{transform:translateX(-6px)}60%{transform:translateX(6px)}75%{transform:translateX(-4px)}90%{transform:translateX(4px)}}
+.dropzone{position:absolute;inset:0;border-radius:50%;display:none;z-index:6}
+.dropzone.active{display:block;border:5px dashed #e63946;background:rgba(255,255,255,.25)}
+.machineLabel{margin-top:clamp(4px,1vh,8px);text-align:center;font-weight:900;color:#123;background:#fff;border:2px solid #123;border-radius:10px;padding:3px;min-height:clamp(24px,4vh,34px);font-size:clamp(10px,1.8vh,14px)}
+.feet{display:flex;justify-content:space-between;padding:0 18px}
+.feet div{width:24px;height:12px;background:#2456a8;border-radius:0 0 8px 8px}
+.right .out{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(5px,1.2vh,10px);min-height:0}
+.result{width:clamp(64px,13vw,100px);height:clamp(64px,13vw,100px);border-radius:50%;background:#fff;border:5px solid #18a558;display:flex;align-items:center;justify-content:center;font-size:clamp(26px,5.5vw,42px);font-weight:900;color:#0b6b38;opacity:0;transform:scale(.4);transition:.35s;box-shadow:0 5px 0 #18a558}
+.result.show{opacity:1;transform:scale(1)}
+.rule{font-weight:900;text-align:center;color:#2456a8;background:#fff;border:2px solid #2456a8;border-radius:12px;padding:5px;font-size:clamp(11px,1.9vh,15px)}
+.explain{margin-top:6px;text-align:center;font-weight:800;font-size:clamp(10px,1.7vh,14px);color:#3c5a7a;background:#f2f8ff;border:2px dashed #2456a8;border-radius:12px;padding:5px}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧺 Mutlak Değer Çamaşır Makinesi</h1>
+  <p class="sub">Sayıyı sürükleyip makineye bırak ya da oklarla / elle yazarak seç. Makine eksi işaretini siler; sonuç mutlak değer olarak işaretsiz çıkar.</p>
+</header>
+
+<div class="app">
+  <section class="panel left">
+    <h2>1️⃣ Sayıları Seç</h2>
+    <div class="numbers" id="numbers"></div>
+    <button type="button" class="addBtn" id="newSet">➕ Yeni Sayılar Ekle</button>
+    <div class="manual">
+      <h3>✋ Kendi Sayını Seç</h3>
+      <div class="selector">
+        <button type="button" class="arrow" id="down" aria-label="Azalt">▼</button>
+        <div class="valueBox"><input id="manualInput" inputmode="numeric" value="-5" aria-label="Sayıyı yaz"></div>
+        <button type="button" class="arrow" id="up" aria-label="Arttır">▲</button>
+      </div>
+      <button type="button" class="washBtn" id="washBtn">🫧 Makineye At ve Yıka</button>
+    </div>
+  </section>
+
+  <section class="machineWrap">
+    <div class="machineNotes">
+      <div class="noteNeg">▼ − eksi: kirli çamaşır</div>
+      <div class="notePos">▲ + artı: temiz çamaşır</div>
+    </div>
+    <div class="machine">
+      <div class="bodyTop"></div>
+      <div class="bodyMain">
+        <div class="dialRow"><div class="brand">MUTLAK DEĞER MAKİNESİ</div><div class="knob"></div></div>
+        <div class="doorArea">
+          <div class="door" id="door">
+            <div class="drum"></div>
+            <div class="water"></div>
+            <div class="bubble" style="left:22%;bottom:18%;width:16px;height:16px"></div>
+            <div class="bubble" style="left:48%;bottom:12%;width:22px;height:22px;animation-delay:.3s"></div>
+            <div class="bubble" style="left:68%;bottom:22%;width:13px;height:13px;animation-delay:.6s"></div>
+            <div class="inside" id="inside">🫧</div>
+            <div class="dropzone" id="dropzone"></div>
+          </div>
+        </div>
+        <div class="machineLabel" id="machineLabel">Sayıyı buraya bırak</div>
+      </div>
+      <div class="feet"><div></div><div></div></div>
+    </div>
+  </section>
+
+  <section class="panel right">
+    <h2>2️⃣ Mutlak Değer</h2>
+    <div class="out">
+      <div class="result" id="result">?</div>
+      <div class="rule" id="rule">Mutlak değer işaretsizdir.</div>
+      <div class="explain">− eksi sayılar <b>kirli çamaşır</b>, + artı sayılar <b>temiz çamaşır</b>dır. Makine eksi işaretini yıkayıp siler.</div>
+    </div>
+  </section>
+</div>
+
+<script>
+const numbersEl=document.getElementById('numbers');
+const door=document.getElementById('door');
+const inside=document.getElementById('inside');
+const dropzone=document.getElementById('dropzone');
+const machineLabel=document.getElementById('machineLabel');
+const result=document.getElementById('result');
+const rule=document.getElementById('rule');
+const manualInput=document.getElementById('manualInput');
+let current=null,counter=-5;
+
+function fmt(v){return v===0?'0':(v<0?'−'+Math.abs(v):'+'+v);}
+function setCounter(v){counter=v;manualInput.value=fmt(counter);}
+function parseManual(){
+  let t=manualInput.value.trim().replace('−','-').replace('+','');
+  let v=parseInt(t,10);
+  if(isNaN(v))v=0;
+  setCounter(v);return counter;
+}
+
+function randomSet(){
+  const vals=[];while(vals.length<8){const v=Math.floor(Math.random()*19)-9;if(!vals.includes(v))vals.push(v);}
+  numbersEl.innerHTML='';
+  vals.forEach(v=>{
+    const c=document.createElement('div');
+    c.className='chip'+(v>0?' pos':'');
+    c.textContent=fmt(v);c.dataset.value=v;
+    makeDraggable(c);numbersEl.appendChild(c);
+  });
+}
+function makeDraggable(chip){
+  chip.addEventListener('pointerdown',e=>{
+    if(current)return;e.preventDefault();
+    const r=chip.getBoundingClientRect(),g=chip.cloneNode(true);
+    g.classList.add('drag');g.style.width=r.width+'px';g.style.height=r.height+'px';
+    document.body.appendChild(g);chip.style.opacity=.25;
+    current={value:+chip.dataset.value,ghost:g,source:chip};
+    moveGhost(e);dropzone.classList.add('active');
+    machineLabel.textContent='Bırak ve yıka!';
+  });
+  window.addEventListener('pointermove',moveGhost,{passive:false});
+  window.addEventListener('pointerup',dropChip);
+}
+function moveGhost(e){if(!current)return;e.preventDefault();current.ghost.style.left=(e.clientX-current.ghost.offsetWidth/2)+'px';current.ghost.style.top=(e.clientY-current.ghost.offsetHeight/2)+'px';}
+function dropChip(e){
+  if(!current)return;
+  const r=door.getBoundingClientRect();
+  const ok=e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom;
+  current.ghost.remove();current.source.style.opacity=1;dropzone.classList.remove('active');
+  if(ok)wash(current.value);else machineLabel.textContent='Sayıyı makinenin içine bırak.';
+  current=null;
+}
+
+document.getElementById('up').addEventListener('click',()=>setCounter(counter+1));
+document.getElementById('down').addEventListener('click',()=>setCounter(counter-1));
+manualInput.addEventListener('change',parseManual);
+manualInput.addEventListener('blur',parseManual);
+document.getElementById('washBtn').addEventListener('click',()=>wash(parseManual()));
+
+function wash(v){
+  machineLabel.textContent='Yıkanıyor...';
+  inside.textContent=fmt(v);
+  door.classList.add('washing','shake');
+  setTimeout(()=>{
+    const a=Math.abs(v);
+    inside.textContent='|'+fmt(v)+'|';
+    machineLabel.textContent='Eksi işaret silindi!';
+    result.textContent=a;result.classList.add('show');
+    rule.textContent=v===0?'|0| = 0':`|${fmt(v)}| = ${a}`;
+    setTimeout(()=>{
+      door.classList.remove('washing','shake');inside.textContent='🫧';
+      machineLabel.textContent='Sayıyı buraya bırak';
+      setTimeout(()=>result.classList.remove('show'),900);
+    },1300);
+  },900);
+}
+document.getElementById('newSet').addEventListener('click',randomSet);
+randomSet();
+setCounter(parseManual());
+</script>
+</body>
+</html>
